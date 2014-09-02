@@ -2,19 +2,22 @@
 
 class Kohana_Controller_Resource extends Controller {
 
-    public static function format(Array $data = array())
+    protected $_content_format = null;
+    
+    public function __construct(Request $request, Response $response)
     {
-        return new Rest_Response_Format_Json($data);
+        parent::__construct($request, $response);
+        
+        //$this->_content_format = Controller_Resource::_get_response_format($this->request->headers('Accept'));
     }
-
+    
+    public function after()
+    {
+        $content_type = $this->_content_format;
+    }
+    
     public function action_error()
     {
-        $status = $this->request->param('status');
-        
-        $this->response
-            ->status($status)
-            ->body(Controller_Resource::format(array(
-                'more_info' => DOCUMENTATION_ERROR_URL . '/' . $status
-            )));
+        $this->response->error($this->request->param('status'));
     }
 }

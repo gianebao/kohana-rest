@@ -11,8 +11,6 @@ if (!defined('DOCUMENTATION_ERROR_URL'))
     define('DOCUMENTATION_ERROR_URL', $_SERVER['DOCUMENTATION_ERROR_URL']);
 }
 
-
-
 Route::set('RestfulDefault', '(<product>(/<version>(/<resource>)))')
  ->filter(function ($route, $params, $request)
     {
@@ -26,3 +24,4 @@ Route::set('RestfulDefault', '(<product>(/<version>(/<resource>)))')
         
         return $params;
     });
+
