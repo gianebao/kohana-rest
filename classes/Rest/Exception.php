@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Exception extends Kohana_Rest_Exception {}
+class Rest_Exception extends Kohana_Rest_Exception {}

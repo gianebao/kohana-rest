@@ -11,17 +11,22 @@ if (!defined('DOCUMENTATION_ERROR_URL'))
     define('DOCUMENTATION_ERROR_URL', $_SERVER['DOCUMENTATION_ERROR_URL']);
 }
 
+if (!Kohana::$errors)
+{
+    set_exception_handler(array('Rest_Exception', 'handler'));
+}
+
 Route::set('RestfulDefault', '(<product>(/<version>(/<resource>)))')
  ->filter(function ($route, $params, $request)
     {
         
         if (empty($params['product']) || empty($params['version']) || empty($params['resource']))
         {
-            $params['controller'] = 'Resource';
-            $params['action'] = 'error';
-            $params['status'] = 400;
+            throw Rest_Exception::factory(400, 'Invalid URL request syntax');
         }
         
+        $params['controller'] = 'Resources';
+        $params['action'] = 'test';
         return $params;
     });
 
