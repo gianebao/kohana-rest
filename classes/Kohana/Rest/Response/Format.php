@@ -20,7 +20,7 @@ abstract class Kohana_Rest_Response_Format {
         
         if (Rest_Response_Format_Json::HEAD_CONTENT_TYPE !== $accepts)
         {
-            throw Rest_Exception::factory(406, 'Content_Type `:content_type` not acceptable', array(':content_type' => $accepts));
+            throw Rest_Exception::factory(406, 'request_header_accept_invalid', array(':content_type' => $accepts));
         }
         
         return new Rest_Response_Format_Json();

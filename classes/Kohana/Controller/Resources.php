@@ -20,6 +20,6 @@ class Kohana_Controller_Resources extends Controller {
     
     public function action_test()
     {
-        echo 'kamote';
+        // echo 'kamote';
     }
 }
