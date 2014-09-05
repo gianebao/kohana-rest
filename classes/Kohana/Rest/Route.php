@@ -12,7 +12,6 @@ class Kohana_Rest_Route {
         $params['controller'] = 'Resources_' . $version . '_' . $resource;
         $params['action'] = strtolower($request->method());
         
-        var_dump($params);
         return $params;
     }
 }
