@@ -45,12 +45,7 @@ Route::set('RestfulDefault', '<product>/<version>/<resource>', array(
         'version' => REST_URL_FORMAT_VERSION,
         'resource' => REST_URL_FORMAT_RESOURCE
     ))
-    ->filter(function ($route, $params, $request)
-    {
-        $params['controller'] = 'Resources';
-        $params['action'] = 'test';
-        return $params;
-    });
+    ->filter('Rest_Route::filter');
 
 Route::set('RestfulMissingResource', '<product>/<version>(/<dummy>)', array(
         'product' => REST_URL_FORMAT_PRODUCT,
