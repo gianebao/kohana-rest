@@ -31,48 +31,14 @@ if (!Kohana::$errors && 'cli' !== php_sapi_name())
     set_exception_handler(array('Rest_Exception', 'handler'));
 }
 
-if (Kohana::PRODUCTION !== Kohana::$environment)
+/**
+ * Cache Routes.
+ */
+if ( ! Route::cache())
 {
-    Route::set('RestfulPing', 'test')
-        ->defaults(array(
-            'controller' => 'Resources',
-            'action' => 'test'
-        ));
+
+    include __DIR__ . DIRECTORY_SEPARATOR . 'routes.php';
+
+   // Cache the routes in Production
+    Route::cache(Kohana::PRODUCTION === Kohana::$environment || Kohana::STAGING === Kohana::$environment);
 }
-
-Route::set('RestfulDefault', '<product>/<version>/<resource>', array(
-        'product' => REST_URL_FORMAT_PRODUCT,
-        'version' => REST_URL_FORMAT_VERSION,
-        'resource' => REST_URL_FORMAT_RESOURCE
-    ))
-    ->filter(function ($route, $params, $request)
-    {
-        $params['controller'] = 'Resources';
-        $params['action'] = 'test';
-        return $params;
-    });
-
-Route::set('RestfulMissingResource', '<product>/<version>(/<dummy>)', array(
-        'product' => REST_URL_FORMAT_PRODUCT,
-        'version' => REST_URL_FORMAT_VERSION,
-        'dummy' => '.*'
-    ))
-    ->filter(function ($route, $params, $request)
-    {
-        throw Rest_Exception::factory(400, 'route_resource_format_invalid');
-    });
-
-Route::set('RestfulMissingVersion', '<product>(/<dummy>)', array(
-        'product' => REST_URL_FORMAT_PRODUCT,
-        'dummy' => '.*'
-    ))
-    ->filter(function ($route, $params, $request)
-    {
-        throw Rest_Exception::factory(400, 'route_version_format_invalid');
-    });
-    
-Route::set('RestfulMissingProduct', '<dummy>', array('dummy' => '.*'))
-    ->filter(function ($route, $params, $request)
-    {
-        throw Rest_Exception::factory(400, 'route_product_format_invalid');
-    });
