@@ -29,6 +29,7 @@ class Kohana_Rest_Exception extends HTTP_Exception {
                 ));
         }
         
+        ORM::factory('Rest_Log')->add('EXCEPTION/STATUS/' . $status, array('message' => $processed_message));
         $processed_message .= '; more_info: :more_info';
         
         $variables = array_merge(array(':more_info' => Rest_Exception::get_more_info_link($status, $message)), $variables);
@@ -69,9 +70,6 @@ class Kohana_Rest_Exception extends HTTP_Exception {
         // $trace   = $this->getTrace();
         
         header(HTTP::$protocol . ' ' . $code . ' ' . $message);
-        $header = new Rest_Response_Header();
-        $header->secure();
-        
         exit(1);
     }
     

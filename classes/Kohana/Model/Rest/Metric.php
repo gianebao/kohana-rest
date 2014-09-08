@@ -2,9 +2,16 @@
 
 class Kohana_Model_Rest_Metric {
     
-    public static function add($message)
+    public static function add($name, $unit = AWS_Watch::UNIT_COUNT)
     {
+        // Available units are in AWS/Service/Watch.php
+        $name = strtoupper($name);
+        
         if (Kohana::DEVELOPMENT === Kohana::$environment)
-        AWS_Watch::push(CLOUDWATCH_NAMESPACE, $metric_name, AWS_Watch::UNIT_COUNT);
+        {
+            return Kohana::$log->add(Log::DEBUG, $name);
+        }
+        
+        AWS_Watch::push(CLOUDWATCH_NAMESPACE, $name, $unit);
     }
 }
