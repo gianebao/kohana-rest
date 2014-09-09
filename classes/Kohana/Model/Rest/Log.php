@@ -2,6 +2,8 @@
 
 class Kohana_Model_Rest_Log {
     
+    const DIRECTORY_PERMISSION = 0755;
+    
     public static $server_trace = array(
         'SERVER_PROTOCOL',
         'REQUEST_METHOD',
@@ -71,18 +73,13 @@ class Kohana_Model_Rest_Log {
         $filename = Request::$client_ip . '-' . str_replace('/', '-', $name) . '-' . microtime(true) . '.json';
         $filename = date('Y/m/d/H/i-s-') . $filename;
         
-        $client = AWS::factory()->get('S3');
+        $dir = dirname($filename);
         
-        list($bucket, $namespace) = explode('/', REST_LOG_S3_BUCKET, 2);
+        if (!is_dir($dir))
+        {
+            mkdir($dir, Model_Rest_Log::DIRECTORY_PERMISSION, true);
+        }
         
-        $result = $client->putObject(array(
-            'Bucket'      => $bucket,
-            'Key'         => $namespace . '/' . $filename,
-            'Body'        => json_encode($data),
-            'ACL'         => REST_LOG_S3_ACL,
-            'ContentType' => 'application/json'
-        ));
-        
-        return $result['ObjectURL'];
+        file_put_contents(REST_LOG_DIR . '/' . $filename, json_encode($data));
     }
 }
