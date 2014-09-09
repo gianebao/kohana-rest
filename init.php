@@ -26,14 +26,9 @@ if (!defined('REST_URL_FORMAT_RESOURCE'))
     define('REST_URL_FORMAT_RESOURCE', '[a-zA-Z][a-zA-Z0-9_\./]*');
 }
 
-if (!defined('REST_LOG_S3_BUCKET'))
+if (!defined('REST_LOG_DIR'))
 {
-    define('REST_LOG_S3_BUCKET', Arr::get($_SERVER, 'REST_LOG_S3_BUCKET', null));
-}
-
-if (!defined('REST_LOG_S3_ACL'))
-{
-    define('REST_LOG_S3_ACL', Arr::get($_SERVER, 'REST_LOG_S3_ACL', null));
+    define('REST_LOG_DIR', Arr::get($_SERVER, 'REST_LOG_DIR', LOG_TMP_DIR));
 }
 
 if (!Kohana::$errors && 'cli' !== php_sapi_name())
