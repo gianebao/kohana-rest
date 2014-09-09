@@ -71,15 +71,15 @@ class Kohana_Model_Rest_Log {
         $data['server'] = $this->_get_server_trace();
         
         $filename = Request::$client_ip . '-' . str_replace('/', '-', $name) . '-' . microtime(true) . '.json';
-        $filename = date('Y/m/d/H/i-s-') . $filename;
+        $filename = rtrim(REST_LOG_DIR, '/') . '/' . date('Y/m/d/H/i-s-') . $filename;
         
         $dir = dirname($filename);
         
-        if (!is_dir($dir))
+        if (!is_dir($dir) && !mkdir($dir, Model_Rest_Log::DIRECTORY_PERMISSION, true))
         {
-            mkdir($dir, Model_Rest_Log::DIRECTORY_PERMISSION, true);
+            throw new Kohana_Exception('Failed to create: :dir.', array(':dir' => $dir));
         }
         
-        file_put_contents(REST_LOG_DIR . '/' . $filename, json_encode($data));
+        file_put_contents($filename, json_encode($data));
     }
 }
