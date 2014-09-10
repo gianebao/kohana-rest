@@ -12,6 +12,6 @@ class Kohana_Model_Rest_Metric {
             return Kohana::$log->add(Log::DEBUG, $name);
         }
         
-        AWS_Watch::push(CLOUDWATCH_NAMESPACE, $name, $unit);
+        AWS_Watch::push(REST_METRIC_NAMESPACE, $name, $unit);
     }
 }

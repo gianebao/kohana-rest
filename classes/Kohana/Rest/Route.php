@@ -6,6 +6,8 @@ class Kohana_Rest_Route {
     {
         $alias = array('Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', '.' => 'Point');
         
+        Rest_Config::product_id($params['product']);
+        
         $version = strtr($params['version'], $alias);
 
         $resource = str_replace(' ', '_', ucwords(trim(str_replace('/', ' ', strtolower($params['resource'])))));

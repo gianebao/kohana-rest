@@ -31,6 +31,17 @@ if (!defined('REST_LOG_DIR'))
     define('REST_LOG_DIR', Arr::get($_SERVER, 'REST_LOG_DIR', LOG_TMP_DIR));
 }
 
+if (!defined('REST_METRIC_NAMESPACE'))
+{
+    define('REST_METRIC_NAMESPACE', Arr::get($_SERVER, 'REST_METRIC_NAMESPACE', null));
+}
+
+if (!defined('REST_PRODUCT_CONFIG_DIR'))
+{
+    define('REST_PRODUCT_CONFIG_DIR', Arr::get($_SERVER, 'REST_PRODUCT_CONFIG_DIR', null));
+}
+
+
 if (!Kohana::$errors && 'cli' !== php_sapi_name())
 {
     set_exception_handler(array('Rest_Exception', 'handler'));

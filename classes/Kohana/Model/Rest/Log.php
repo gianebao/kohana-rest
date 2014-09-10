@@ -66,12 +66,17 @@ class Kohana_Model_Rest_Log {
         return $traces;
     }
     
+    public static function get_filename($name)
+    {
+        return rtrim(REST_LOG_DIR, '/') . '/' . date('Y/m/d/H/i/s-')
+            . Request::$client_ip . '-' . str_replace('/', '-', $name) . '-' . microtime(true) . '.json';
+    }
+    
     protected function _write($name, array $data)
     {
         $data['server'] = $this->_get_server_trace();
         
-        $filename = Request::$client_ip . '-' . str_replace('/', '-', $name) . '-' . microtime(true) . '.json';
-        $filename = rtrim(REST_LOG_DIR, '/') . '/' . date('Y/m/d/H/i-s-') . $filename;
+        $filname = Model_Rest_Log::get_filename($name);
         
         $dir = dirname($filename);
         
