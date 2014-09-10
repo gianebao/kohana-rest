@@ -3,7 +3,7 @@
 class Kohana_Rest_Config {
     
     const FILE_EXT = '.json';
-    protected static $_product_id = null;
+    protected static $_product_id = 'sg';
     
     public static function product_id($name = null)
     {
@@ -26,7 +26,9 @@ class Kohana_Rest_Config {
             throw new Kohana_Exception('Configuration `:config` not found.', array(':config' => $file));
         }
         
-        $config = json_decode($file, true);
+        
+        
+        $config = json_decode(file_get_contents($file), true);
         
         if (false === $config || null === $config)
         {
