@@ -3,7 +3,7 @@
 class Kohana_Rest_Config {
     
     const FILE_EXT = '.json';
-    protected static $_product_id = 'sg';
+    protected static $_product_id = null;
     
     public static function product_id($name = null)
     {
