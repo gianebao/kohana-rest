@@ -5,9 +5,6 @@ if (!class_exists('RestHelper'))
     require_once __DIR__ . DIRECTORY_SEPARATOR . 'Helpers' . DIRECTORY_SEPARATOR . 'RestHelper.php';
 }
 
-if (!class_exists('RestSettingsAndConfigurationsTest'))
-{
-
 /**
  * Rest Configurations Check.
  *
@@ -40,6 +37,38 @@ class RestSettingsAndConfigurationsTest extends Unittest_TestCase
         $this->assertNotEmpty(REST_DOCUMENTATION_ERROR_URL,
             '`REST_DOCUMENTATION_ERROR_URL` documentation site URL for the API\'s errors');
     }
+
+    /**
+     * Test if the Metrics and Logging.
+     *
+     * @group rest.config.value
+     */
+    function testMetricsAndLoggingAreDefined()
+    {
+        $this->assertNotEmpty(REST_LOG_DIR,
+            '`REST_LOG_DIR` documentation site URL for the API\'s errors');
+        
+        $this->assertArrayHasKey('REST_PRODUCT_CONFIG_DIR', $_SERVER,
+            '`REST_PRODUCT_CONFIG_DIR` configs for products');
+        
+        $this->assertNotEmpty(REST_PRODUCT_CONFIG_DIR,
+            '`REST_PRODUCT_CONFIG_DIR` configs for products.');
+        
+        if (Kohana::DEVELOPMENT !== Kohana::$environment)
+        {
+            $this->assertArrayHasKey('REST_LOG_DIR', $_SERVER,
+                '`REST_LOG_DIR` environment variable detailed logs.');
+
+            $this->assertNotEquals(LOG_TMP_DIR, REST_LOG_DIR,
+                '`REST_LOG_DIR` must not be equal to `LOG_TMP_DIR`.');
+
+            $this->assertArrayHasKey('REST_METRIC_NAMESPACE', $_SERVER,
+                '`REST_METRIC_NAMESPACE` namespace for metric logging (cloudwatch)');
+
+            $this->assertNotEmpty(REST_METRIC_NAMESPACE,
+                '`REST_METRIC_NAMESPACE` namespace for metric logging (cloudwatch)');
+        }
+    }
     
     /**
      * Test if Application has reference can connect to the Documentation Site.
@@ -57,6 +86,4 @@ class RestSettingsAndConfigurationsTest extends Unittest_TestCase
         $this->assertContains($request['head']['http_code'], $acceptable_http_status,
             'HTTP Status when connecting to `' . $url . '`. Allows ' . $acceptable_http_status_text);
     }
-}
-    
 }

@@ -12,7 +12,7 @@ if (!class_exists('RestHelper'))
  * @group rest.url
  * @group rest.url.default
  */
-class RestSettingsAndConfigurationsTest extends Unittest_TestCase
+class RestDefaultUrlTest extends Unittest_TestCase
 {
     protected static function getExceptionMessage($status, $message)
     {
