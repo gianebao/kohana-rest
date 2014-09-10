@@ -33,7 +33,7 @@ class Kohana_Rest_Config {
             throw new Kohana_Exception('Configuration `:config` not found.', array(':config' => $file));
         }
         
-        $config = json_decode($file, true);
+        $config = json_decode(file_get_contents($file), true);
         
         if (false === $config || null === $config)
         {
