@@ -1,17 +1,23 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Model_Rest_Metric {
+class Kohana_Model_Rest_Metric extends AWS_Watch {
     
-    public static function add($name, $unit = AWS_Watch::UNIT_COUNT)
+    public function add($name, $unit = Model_Rest_Metric::UNIT_COUNT, $value = 1)
     {
         // Available units are in AWS/Service/Watch.php
-        $name = strtoupper($name);
+        $name = str_replace(array('::', '_'), '/', strtoupper($name));
         
-        if (Kohana::DEVELOPMENT === Kohana::$environment)
+        if (false !== Kohana::$errors)
         {
-            return Kohana::$log->add(Log::DEBUG, $name);
+            return Kohana::$log->add(Log::DEBUG, $name . ':' . $value . $unit);
         }
         
-        AWS_Watch::push(REST_METRIC_NAMESPACE, $name, $unit);
+        
+        Model_Rest_Metric::push(REST_METRIC_NAMESPACE, $name, $unit, $value);
+    }
+    
+    public function millisec($name, $value)
+    {
+        $this->add($name, Model_Rest_Metric::UNIT_MILLISECONDS, $value);
     }
 }

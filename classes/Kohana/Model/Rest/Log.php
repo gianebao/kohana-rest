@@ -33,7 +33,7 @@ class Kohana_Model_Rest_Log {
         // Available units are in AWS/Service/Watch.php
         $name = strtoupper($name);
         
-        if (Kohana::DEVELOPMENT === Kohana::$environment)
+        if (false !== Kohana::$errors)
         {
             $message = json_encode($data);
             return Kohana::$log->add(Log::DEBUG, "[$name]\t$message");

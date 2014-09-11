@@ -2,13 +2,13 @@
 
 class Kohana_Controller_Resources extends Controller {
 
-    protected $_content_type = null;
+    protected $_content_format = null;
     private $_contents = null;
     
     public function __construct(Request $request, Response $response)
     {
         parent::__construct($request, $response);
-        $this->_content_type = Rest_Response_Format::factory($this->request->headers('Accept'));
+        $this->_content_format = Rest_Response_Format::factory($this->request->headers('accept'));
     }
     
     public function action_test()
@@ -28,15 +28,63 @@ class Kohana_Controller_Resources extends Controller {
     
     public function after()
     {
-        $content_type = $this->_content_type;
         
-        $this->response->headers(array('Content-Type' => $content_type::HEAD_CONTENT_TYPE));
+        $content_format = $this->_content_format;
+        
+        $this->response->headers(array('Content-Type' => $content_format::HEAD_CONTENT_TYPE));
         
         $body = $this->_respond();
         
         if (!empty($body))
         {
-            $this->response->body($this->_content_type->render($body));
+            
+            $this->measure_runtime(array($content_format, 'render'), $body);
+            
+            $encoding = $this->measure_runtime(array($content_format, 'encode'), $this->request->headers('accept-encoding'));
+            
+            if (is_object(empty($encoding)))
+            {
+                $this->response->headers(array('Transfer-Encoding' => $encoding::TRANSFER_ENCODING));
+            }
+            
+            $this->measure_runtime(array($this->response, 'body'), $content_format);
+    
         }
+    }
+    
+    /**
+     * @param string $function
+     * @param mixed  $parameters ....
+     */
+    public function measure_runtime()
+    {
+        $metric = ORM::factory('Rest_Metric');
+        
+        $arr = func_get_args();
+        $fn = array_shift($arr);
+        
+        if (is_array($fn))
+        {
+            $cl_name = get_class($fn[0]);
+            $fn_name = $fn[1];
+        }
+        elseif (0 === strpos($fn, 'self::'))
+        {
+            $fn_name = explode('::', $fn);
+            $cl_name = get_class();
+            $fn_name = $fn_name[1];
+        }
+        else
+        {
+            $fn_name = explode('::', $fn);
+            $cl_name = $fn_name[0];
+            $fn_name = $fn_name[1];
+        }
+        
+        $time = microtime(true);
+        $response = call_user_func_array($fn, $arr);
+        $metric->millisec($cl_name . '/' . $fn_name, ceil((microtime(true) - $time) * 1000));
+        
+        return $response;
     }
 }

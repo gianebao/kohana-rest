@@ -7,7 +7,7 @@ class Kohana_Rest_Config {
     
     public static function product_id($name = null)
     {
-        if (empty($name) && empty(Rest_Config::$_product_id))
+        if (!empty($name) && empty(Rest_Config::$_product_id))
         {
             Rest_Config::$_product_id = $name;
         }
