@@ -70,7 +70,7 @@ abstract class Kohana_Rest_Response_Format {
                 {
                     // Perform only one type of encoding.
                     $this->_data = $class->encode($this->_data, Arr::get($match, 6, null));
-                    return $this;
+                    return $class;
                 }
             }
         }

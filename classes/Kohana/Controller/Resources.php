@@ -52,7 +52,7 @@ class Kohana_Controller_Resources extends Controller {
         
         $content_format = $this->_content_format;
         
-        $this->response->headers(array('Content-Type' => $content_format::HEAD_CONTENT_TYPE));
+        $this->response->headers('Content-Type', $content_format::HEAD_CONTENT_TYPE);
         
         $body = $this->_respond();
         
@@ -62,10 +62,14 @@ class Kohana_Controller_Resources extends Controller {
             
             $encoding = $this->measure_runtime(array($content_format, 'encode'), $this->request->headers('accept-encoding'));
             
-            if (is_object(empty($encoding)))
+            if (!empty($encoding) && is_object($encoding))
             {
-                $this->response->headers(array('Transfer-Encoding' => $encoding::TRANSFER_ENCODING));
+                $this->response->headers('Vary', 'Accept-Encoding');
+                $this->response->headers('Content-Encoding', $encoding::TRANSFER_ENCODING);
             }
+            
+            $this->response->headers('Content-Length', strlen($content_format));
+            $this->response->status(200);
             
             $this->measure_runtime(array($this->response, 'body'), $content_format);
         }
