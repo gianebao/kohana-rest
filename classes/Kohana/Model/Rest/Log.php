@@ -76,7 +76,7 @@ class Kohana_Model_Rest_Log {
     {
         $data['server'] = $this->_get_server_trace();
         
-        $filname = Model_Rest_Log::get_filename($name);
+        $filename = Model_Rest_Log::get_filename($name);
         
         $dir = dirname($filename);
         
