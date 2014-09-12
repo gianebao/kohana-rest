@@ -28,21 +28,19 @@ abstract class Kohana_Rest_Response_Format {
         
         // Turn this to a switch..case to support multiple content type
         // But for know we only support, JSON
-        if (empty($status))
+        if (!empty($status))
         {
-            throw Rest_Exception::factory(406, 'request_header_accept_invalid', array(':content_type' => $accepts));
-        }
-        
-        foreach ($matches as $match)
-        {
-            if (Rest_Response_Format_Json::HEAD_CONTENT_TYPE === $match[1])
+            foreach ($matches as $match)
             {
-                // Provides flexibility. Hardcoded since json is the onlyone supported now.
-                return new Rest_Response_Format_Json();
-                break;
+                if (Rest_Response_Format_Json::HEAD_CONTENT_TYPE === $match[1])
+                {
+                    // Provides flexibility. Hardcoded since json is the onlyone supported now.
+                    return new Rest_Response_Format_Json();
+                    break;
+                }
             }
         }
-        
+
         throw Rest_Exception::factory(406, 'request_header_accept_invalid', array(':content_type' => $accepts));
     }
     
@@ -62,23 +60,21 @@ abstract class Kohana_Rest_Response_Format {
         
         $status = Rest_Response_Format::parse_accept($encoding, $matches);
         
-        if (empty($status))
+        if (!empty($status))
         {
-            throw Rest_Exception::factory(406, 'request_header_accept_encoding_invalid', array(':content_encoding' => $encoding));
-        }
-        
-        foreach ($matches as $match)
-        {
-            $class = Rest_Response_Encoding::factory($match[1]);
-            
-            if (!empty($class))
+            foreach ($matches as $match)
             {
-                // Perform only one type of encoding.
-                $this->_data = $class->encode($this->_data, Arr::get($match, 6, null));
-                return $this;
+                $class = Rest_Response_Encoding::factory($match[1]);
+                
+                if (!empty($class))
+                {
+                    // Perform only one type of encoding.
+                    $this->_data = $class->encode($this->_data, Arr::get($match, 6, null));
+                    return $this;
+                }
             }
         }
-        
+
         throw Rest_Exception::factory(406, 'request_header_accept_encoding_invalid', array(':content_encoding' => $encoding));
     }
     

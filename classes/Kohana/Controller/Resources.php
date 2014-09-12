@@ -58,7 +58,6 @@ class Kohana_Controller_Resources extends Controller {
         
         if (!empty($body))
         {
-            
             $this->measure_runtime(array($content_format, 'render'), $body);
             
             $encoding = $this->measure_runtime(array($content_format, 'encode'), $this->request->headers('accept-encoding'));
@@ -69,7 +68,6 @@ class Kohana_Controller_Resources extends Controller {
             }
             
             $this->measure_runtime(array($this->response, 'body'), $content_format);
-    
         }
     }
     
