@@ -4,15 +4,25 @@ class Kohana_Rest_Route {
     
     public static function filter($route, $params, $request)
     {
-        $alias = array('Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', '.' => 'Point');
-        
         Rest_Config::product_id($params['product']);
         
-        $version = strtr($params['version'], $alias);
+        $version = strtoupper($params['version']);
 
         $resource = str_replace(' ', '_', ucwords(trim(str_replace('/', ' ', strtolower($params['resource'])))));
         $params['controller'] = 'Resources_' . $version . '_' . $resource;
         $params['action'] = strtolower($request->method());
+        
+        $methods = get_class_methods('Controller_' . $params['controller']);
+        
+        if (empty($methods))
+        {
+            throw Rest_Exception::factory(404, 'resource_not_found');
+        }
+        
+        if (!in_array('action_' . $params['action'], $methods))
+        {
+            throw Rest_Exception::factory(405, 'method_not_supported', array(':method' => strtoupper($request->method())));
+        }
         
         return $params;
     }

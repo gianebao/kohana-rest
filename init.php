@@ -18,7 +18,10 @@ if (!defined('REST_URL_FORMAT_PRODUCT'))
 
 if (!defined('REST_URL_FORMAT_VERSION'))
 {
-    define('REST_URL_FORMAT_VERSION', '[0-9]+\.[0-9]+');
+    /**
+     * In compliance to: http://restcookbook.com/Basics/versioning
+     */
+    define('REST_URL_FORMAT_VERSION', 'v[0-9]+');
 }
 
 if (!defined('REST_URL_FORMAT_RESOURCE'))
