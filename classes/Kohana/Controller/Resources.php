@@ -40,7 +40,9 @@ class Kohana_Controller_Resources extends Controller {
         $this->{$action}();
 
         $this->after();
-        ORM::factory('Rest_Metric')->millisec(get_class($this) . '/' . $this->request->method(), ceil((microtime(true) - $time) * 1000));
+        $time = (microtime(true) - $time) * 1000;
+        
+        ORM::factory('Rest_Metric')->millisec(get_class($this) . '/' . $this->request->method(), ceil($time));
         
         return $this->response;
     }
@@ -100,7 +102,9 @@ class Kohana_Controller_Resources extends Controller {
 
         $time = microtime(true);
         $response = call_user_func_array($fn, $arr);
-        ORM::factory('Rest_Metric')->millisec($cl_name . '/' . $fn_name, ceil((microtime(true) - $time) * 1000));
+        $time = (microtime(true) - $time) * 1000;
+        
+        ORM::factory('Rest_Metric')->millisec($cl_name . '/' . $fn_name, ceil($time));
         
         return $response;
     }
