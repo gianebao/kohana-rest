@@ -1,7 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 class Kohana_Controller_Resources extends Controller {
-
     protected $_content_format = null;
     private $_contents = null;
     
@@ -24,6 +23,26 @@ class Kohana_Controller_Resources extends Controller {
         }
         
         return $this->_contents;
+    }
+    
+    public function execute()
+    {
+        $time = microtime(true);
+        $this->before();
+
+        $action = 'action_'.$this->request->action();
+
+        if (!method_exists($this, $action))
+        {
+            throw Rest_Exception::factory(405, 'method_not_supported', array(':method' => strtoupper($this->request->method())));
+        }
+
+        $this->{$action}();
+
+        $this->after();
+        ORM::factory('Rest_Metric')->millisec(get_class($this) . '/' . $this->request->method(), ceil((microtime(true) - $time) * 1000));
+        
+        return $this->response;
     }
     
     public function after()
@@ -58,8 +77,6 @@ class Kohana_Controller_Resources extends Controller {
      */
     public function measure_runtime()
     {
-        $metric = ORM::factory('Rest_Metric');
-        
         $arr = func_get_args();
         $fn = array_shift($arr);
         
@@ -80,10 +97,10 @@ class Kohana_Controller_Resources extends Controller {
             $cl_name = $fn_name[0];
             $fn_name = $fn_name[1];
         }
-        
+
         $time = microtime(true);
         $response = call_user_func_array($fn, $arr);
-        $metric->millisec($cl_name . '/' . $fn_name, ceil((microtime(true) - $time) * 1000));
+        ORM::factory('Rest_Metric')->millisec($cl_name . '/' . $fn_name, ceil((microtime(true) - $time) * 1000));
         
         return $response;
     }

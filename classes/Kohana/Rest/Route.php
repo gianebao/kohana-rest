@@ -19,11 +19,6 @@ class Kohana_Rest_Route {
             throw Rest_Exception::factory(404, 'resource_not_found');
         }
         
-        if (!in_array('action_' . $params['action'], $methods))
-        {
-            throw Rest_Exception::factory(405, 'method_not_supported', array(':method' => strtoupper($request->method())));
-        }
-        
         return $params;
     }
 }
