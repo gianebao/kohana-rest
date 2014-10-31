@@ -30,6 +30,12 @@ class Kohana_Model_Rest_Log {
     
     public function add($name, array $data)
     {
+        if (class_exists('Oauth_Request') && method_exists('Oauth_Request', 'from_request'))
+        {
+            $req = Oauth_Request::from_request();
+            $name = Arr::get($req->get_parameters(), 'oauth_consumer_key', '') . '/' . $name;
+        }
+        
         // Available units are in AWS/Service/Watch.php
         $name = strtoupper($name);
         

@@ -19,14 +19,14 @@ class Kohana_Rest_Config {
     {
         $product = Rest_Config::product_id();
         
-        if (empty($product))
+        $file = REST_PRODUCT_CONFIG_DIR;
+        
+        if (!empty($product))
         {
-            throw new Kohana_Exception('No Product ID was found.');
+            $file .= DIRECTORY_SEPARATOR . $product;
         }
         
-        $file = REST_PRODUCT_CONFIG_DIR
-            . DIRECTORY_SEPARATOR . $product
-            . DIRECTORY_SEPARATOR . $name . $extension;
+        $file .= DIRECTORY_SEPARATOR . $name . $extension;
         
         if (!is_file($file))
         {

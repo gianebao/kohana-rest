@@ -8,8 +8,9 @@ class Kohana_Rest_Route {
         
         $version = strtoupper($params['version']);
 
-        $resource = str_replace(' ', '_', ucwords(trim(str_replace('/', ' ', strtolower($params['resource'])))));
+        $resource = str_replace(' ', '_', ucwords(trim(str_replace(array('/', '_'), ' ', strtolower($params['resource'])))));
         $params['controller'] = 'Resources_' . $version . '_' . $resource;
+        
         $params['action'] = strtolower($request->method());
         
         $methods = get_class_methods('Controller_' . $params['controller']);

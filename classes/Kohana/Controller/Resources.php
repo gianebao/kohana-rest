@@ -1,6 +1,15 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 class Kohana_Controller_Resources extends Controller {
+    
+    const METHOD_GET = 'GET';
+    const METHOD_POST = 'POST';
+    const METHOD_PUT = 'PUT';
+    const METHOD_DELETE = 'DELETE';
+    
+    use Trait_Resources_Controller_Responses,
+        Trait_Resources_Controller_Metrics;
+    
     protected $_content_format = null;
     private $_contents = null;
     
@@ -15,26 +24,36 @@ class Kohana_Controller_Resources extends Controller {
         $this->_respond(true);
     }
     
-    protected function _respond($data = null)
-    {
-        if (null !== $data)
-        {
-            $this->_contents = is_bool($data) ? array('status' => $data): $data;
-        }
-        
-        return $this->_contents;
-    }
-    
     public function execute()
     {
+        $namespace = 'action_';
         $time = microtime(true);
         $this->before();
 
-        $action = 'action_'.$this->request->action();
+        $action = $namespace . $this->request->action();
 
         if (!method_exists($this, $action))
         {
-            throw Rest_Exception::factory(405, 'method_not_supported', array(':method' => strtoupper($this->request->method())));
+            $methods = array(
+                Controller_Resources::METHOD_GET,
+                Controller_Resources::METHOD_POST,
+                Controller_Resources::METHOD_PUT,
+                Controller_Resources::METHOD_DELETE
+            );
+            
+            for ($i = 0, $count = count($methods); $i < $count; $i ++)
+            {
+                if (!method_exists($this, $namespace . strtolower($methods[$i])))
+                {
+                    unset($methods[$i]);
+                }
+            }
+            
+            $methods = array_merge($methods);
+            
+            $exception = Rest_Exception::factory(405, 'method_not_supported', array(':method' => strtoupper($this->request->method())));
+            
+            throw $exception->headers('allow', implode(',', $methods));
         }
 
         $this->{$action}();
@@ -64,50 +83,26 @@ class Kohana_Controller_Resources extends Controller {
             
             if (!empty($encoding) && is_object($encoding))
             {
-                $this->response->headers('Vary', 'Accept-Encoding');
-                $this->response->headers('Content-Encoding', $encoding::TRANSFER_ENCODING);
+                $this->response
+                    ->headers('Vary', 'Accept-Encoding')
+                    ->headers('Content-Encoding', $encoding::TRANSFER_ENCODING);
             }
             
             $this->response->headers('Content-Length', strlen($content_format));
-            $this->response->status(200);
             
             $this->measure_runtime(array($this->response, 'body'), $content_format);
         }
-    }
-    
-    /**
-     * @param string $function
-     * @param mixed  $parameters ....
-     */
-    public function measure_runtime()
-    {
-        $arr = func_get_args();
-        $fn = array_shift($arr);
         
-        if (is_array($fn))
+        // Profiling
+        if (TRUE === Kohana::$profiling)
         {
-            $cl_name = get_class($fn[0]);
-            $fn_name = $fn[1];
+            $view = View::factory('profiler/stats');
+            
+            $this->response
+                ->headers('Content-Encoding', 'text/html')
+                ->headers('Content-Length', strlen($view))
+                ->body($view);
         }
-        elseif (0 === strpos($fn, 'self::'))
-        {
-            $fn_name = explode('::', $fn);
-            $cl_name = get_class();
-            $fn_name = $fn_name[1];
-        }
-        else
-        {
-            $fn_name = explode('::', $fn);
-            $cl_name = $fn_name[0];
-            $fn_name = $fn_name[1];
-        }
+    }
 
-        $time = microtime(true);
-        $response = call_user_func_array($fn, $arr);
-        $time = (microtime(true) - $time) * 1000;
-        
-        ORM::factory('Rest_Metric')->millisec($cl_name . '/' . $fn_name, ceil($time));
-        
-        return $response;
-    }
 }

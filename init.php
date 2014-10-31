@@ -44,10 +44,21 @@ if (!defined('REST_PRODUCT_CONFIG_DIR'))
     define('REST_PRODUCT_CONFIG_DIR', Arr::get($_SERVER, 'REST_PRODUCT_CONFIG_DIR', null));
 }
 
+if (!defined('RESOURCE_QUERY_LIMIT_DEFAULT'))
+{
+    define('RESOURCE_QUERY_LIMIT_DEFAULT', Arr::get($_SERVER, 'RESOURCE_QUERY_LIMIT_DEFAULT', 10));
+}
+
+if (!defined('RESOURCE_QUERY_LIMIT_MAX'))
+{
+    define('RESOURCE_QUERY_LIMIT_MAX', Arr::get($_SERVER, 'RESOURCE_QUERY_LIMIT_MAX', 100));
+}
 
 if (!Kohana::$errors && 'cli' !== php_sapi_name())
 {
     set_exception_handler(array('Rest_Exception', 'handler'));
+    set_error_handler(array('Rest_Error', 'handler'));
+    register_shutdown_function(array('Rest_Error', 'shutdown_handler'));
 }
 
 /**

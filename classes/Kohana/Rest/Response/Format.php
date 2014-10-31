@@ -19,7 +19,8 @@ abstract class Kohana_Rest_Response_Format {
     
     public static function factory($accepts)
     {
-        if (empty($accepts) || '*/*' == $accepts)
+        $generic = '*/*';
+        if (empty($accepts) || $generic == $accepts)
         {
             $accepts = Rest_Response_Format_Json::HEAD_CONTENT_TYPE;
         }
@@ -32,7 +33,7 @@ abstract class Kohana_Rest_Response_Format {
         {
             foreach ($matches as $match)
             {
-                if (Rest_Response_Format_Json::HEAD_CONTENT_TYPE === $match[1])
+                if ($generic == $match[1] || Rest_Response_Format_Json::HEAD_CONTENT_TYPE === $match[1])
                 {
                     // Provides flexibility. Hardcoded since json is the onlyone supported now.
                     return new Rest_Response_Format_Json();
@@ -42,6 +43,28 @@ abstract class Kohana_Rest_Response_Format {
         }
 
         throw Rest_Exception::factory(406, 'request_header_accept_invalid', array(':content_type' => $accepts));
+    }
+    
+    
+    public static function get_object_fields($data, $callback)
+    {
+        if (empty($callback))
+        {
+            return false;
+        }
+        
+        $data = $data->find_all()->as_array();
+        
+        $records = array();
+        
+        $_callback = function ($value, $key) use ($callback, & $records, & $controller)
+        {
+            $records[$key] = $callback($value, $key, $data, $controller);
+        };
+        
+        array_walk($data, $_callback);
+        
+        return $records;
     }
     
     abstract public function render(array $data, $encoding = null);

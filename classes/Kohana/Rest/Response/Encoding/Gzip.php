@@ -6,10 +6,11 @@ class Kohana_Rest_Response_Encoding_Gzip extends Rest_Response_Encoding{
     
     public function encode($data, $level = null)
     {
-        $level = is_null($level) ? -1: (int) $level;
-        
-        return -1 <= $level && 9 >= $level
-            ? gzcompress($data, $level)
-            : $data;
+        $level = is_null($level) ? 9: (int) $level;
+    
+        return "\x1f\x8b\x08\x00\x00\x00\x00\x00"
+         . substr(gzcompress($data, $level), 0, -4) // substr -4 isn't needed
+         . pack('V', crc32($data))             // crc32 and
+         . pack('V', strlen($data));
     }
 }

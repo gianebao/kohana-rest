@@ -2,6 +2,7 @@
 
 class Kohana_Rest_Exception extends HTTP_Exception {
     protected static $_messages_path = 'rest/errors/:status';
+    protected $_headers = array();
     
     public static function get_more_info_link($status, $message)
     {
@@ -46,6 +47,19 @@ class Kohana_Rest_Exception extends HTTP_Exception {
     }
     
     /**
+     * Specifies the list of allowed HTTP methods
+     *
+     * @uses    Kohana_Exception::response
+     * @param   Exception  $e
+     * @return  void
+     */
+    public function headers($header, $methods)
+    {
+        $this->_headers[$header] = $methods;
+        return $this;
+    }
+
+    /**
      * Exception handler, logs the exception and generates a Response object
      * for display.
      * To support ReSTful, exception messages are added to the standard http status response.
@@ -69,7 +83,10 @@ class Kohana_Rest_Exception extends HTTP_Exception {
         // $line    = $this->getLine();
         // $trace   = $this->getTrace();
         
+        $response = Response::factory();
+        $response->headers($this->_headers)->send_headers();
         header(HTTP::$protocol . ' ' . $code . ' ' . $message);
+        
         exit(1);
     }
     

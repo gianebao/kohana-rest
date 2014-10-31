@@ -16,6 +16,11 @@ Route::set('RestfulDefault', '<product>/<version>/<resource>', array(
     ))
     ->filter('Rest_Route::filter');
 
+/**
+ * Include this in application/bootsrap.php for this to be triggered once all routes
+ * have been evaluated.
+ *
+ * 
 Route::set('RestfulMissingResource', '<product>/<version>(/<dummy>)', array(
         'product' => REST_URL_FORMAT_PRODUCT,
         'version' => REST_URL_FORMAT_VERSION,
@@ -34,9 +39,12 @@ Route::set('RestfulMissingVersion', '<product>(/<dummy>)', array(
     {
         throw Rest_Exception::factory(400, 'route_version_format_invalid');
     });
-    
+
 Route::set('RestfulMissingProduct', '<dummy>', array('dummy' => '.*'))
     ->filter(function ($route, $params, $request)
     {
         throw Rest_Exception::factory(400, 'route_product_format_invalid');
     });
+ *
+ * End of check
+ */
